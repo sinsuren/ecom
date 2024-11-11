@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	server := api.NewAPIServer(":8080", nil)
 
 	db, err := db2.NewMySQQStorage(mysql.Config{
 		User:                 config.Envs.DBUser,
@@ -21,9 +20,13 @@ func main() {
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	})
-	_ = err
-	_ = db
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	initStorage(db)
+	server := api.NewAPIServer(":8080", nil)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
